@@ -1,0 +1,135 @@
+@page
+@using DBGuard.Common.Extensions
+@using DBGuard.DataAccess.Data.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AlertsModel
+@{
+    ViewData["Title"] = "Alerts";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Alerts</h2>
+        <span class="badge bg-danger fs-6 px-3 py-2">@Model.Alerts.Count() Total Alerts</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">From Date</label>
+                    <input type="datetime-local" name="from" class="form-control" value="@Model.From?.ToString("yyyy-MM-ddTHH:mm")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">To Date</label>
+                    <input type="datetime-local" name="to" class="form-control" value="@Model.To?.ToString("yyyy-MM-ddTHH:mm")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Alert Type</label>
+                    <select name="type" class="form-select" value="@Model.Type">
+                        <option value="" selected="@(Model.Type == null)">
+                            All Types
+                        </option>
+
+                        <option value="0" selected="@(Model.Type == AlertType.SQLInjection)">
+                            SQL Injection
+                        </option>
+
+                        <option value="1" selected="@(Model.Type == AlertType.BruteForce)">
+                            Brute Force
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="search" class="form-control" placeholder="Search description..." 
+                           value="@Model.Search" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Username" 
+                           value="@Model.Username" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">IP Address</label>
+                    <input type="text" name="ipAddress" class="form-control" placeholder="192.168.1.1" 
+                           value="@Model.IpAddress" />
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary-custom flex-fill">
+                        <i class="fas fa-search me-2"></i>Apply Filters
+                    </button>
+                    <a href="/Alerts" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alerts Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Username</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Alerts.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    No alerts found.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var alert in Model.Alerts)
+                            {
+                                <tr>
+                                    <td>
+                                        <small>@alert.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">@alert.Type.GetTextRepresentation()</span>
+                                    </td>
+                                    <td>@alert.Description</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(alert.Username))
+                                        {
+                                            <strong>@alert.Username</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(alert.IpAddress))
+                                        {
+                                            <code>@alert.IpAddress</code>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

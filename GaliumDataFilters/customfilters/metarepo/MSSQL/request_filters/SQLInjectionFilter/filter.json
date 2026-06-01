@@ -1,0 +1,26 @@
+{
+  "active": true,
+  "codeType": "java",
+  "implementation": "com.dbguard.customfilters.SQLInjectionFilter",
+  "phase": null,
+  "canHaveCode": false,
+  "helpURL": "https://www.galliumdata.com/docs/java-filters/sample-java-filter",
+  "tags": [],
+  "parameters": {
+     "Action": {
+      "defaultValue":1,
+      "description":"Action that should be performed after sql injection is detected",
+      "type":"INTEGER",
+      "required":false,
+      "allowedValues": [1, 2, 3]
+    },
+    "Threshold": {
+      "defaultValue":"0.95",
+      "description":"Accuracy threshold",
+      "type":"STRING",
+      "required":true
+    }
+  },
+  "autocomplete": [
+  ]
+}

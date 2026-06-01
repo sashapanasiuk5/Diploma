@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatencyTest", "LatencyTest\LatencyTest.csproj", "{8F02288A-5ECD-45F7-A88E-B888B7710F81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThroughputTest", "ThroughputTest\ThroughputTest.csproj", "{7E76C430-4104-43FE-BF47-6573B8393D06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FaultToleranceTest", "FaultToleranceTest\FaultToleranceTest.csproj", "{BC5D849F-4C94-4202-896B-FB8AA1A01355}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F02288A-5ECD-45F7-A88E-B888B7710F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F02288A-5ECD-45F7-A88E-B888B7710F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F02288A-5ECD-45F7-A88E-B888B7710F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F02288A-5ECD-45F7-A88E-B888B7710F81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E76C430-4104-43FE-BF47-6573B8393D06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E76C430-4104-43FE-BF47-6573B8393D06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E76C430-4104-43FE-BF47-6573B8393D06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E76C430-4104-43FE-BF47-6573B8393D06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC5D849F-4C94-4202-896B-FB8AA1A01355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5D849F-4C94-4202-896B-FB8AA1A01355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5D849F-4C94-4202-896B-FB8AA1A01355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5D849F-4C94-4202-896B-FB8AA1A01355}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

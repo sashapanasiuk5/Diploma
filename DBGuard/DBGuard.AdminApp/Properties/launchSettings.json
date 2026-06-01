@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:54176",
+      "sslPort": 44322
+    },
+    "environmentVariables": {
+      "APP_HOSTNAME":"dbguard",
+      "GALLIUMDATA_HOSTNAME":"127.0.0.1:8089",
+      "GALLIUMDATA_LOCAL_PORT":"1433",
+      "DB_CONNECTION":"Server=host.docker.internal,1433;Database=DBGuard;User Id=webadmin;Password=123456;Encrypt=True;TrustServerCertificate=True;"
+    }
+  },
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5119",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7162;http://localhost:5119",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_HOSTNAME":"dbguard",
+        "GALLIUMDATA_HOSTNAME":"localhost:8089",
+        "GALLIUMDATA_LOCAL_PORT":"1433",
+        "DB_CONNECTION":"Server=localhost,1433;Database=DBGuard;User Id=webadmin;Password=123456;Encrypt=True;TrustServerCertificate=True;"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  gallium-proxy:
+    image: gallium-dbguard:1.0
+    container_name: gallium-proxy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/8080'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    cpuset: "0-3"
+    ports:
+      - 8089:8080
+      - 14330:1433
+
+  db-guard:
+    image: dbguard
+    container_name: dbguard
+    ports:
+      - 8888:8080
+    environment:
+      - APP_HOSTNAME=dbguard
+      - GALLIUMDATA_HOSTNAME=gallium-proxy:8080
+      - GALLIUMDATA_LOCAL_PORT=1433
+      - DB_CONNECTION=Server=host.docker.internal,1433;Database=DBGuard;User Id=webadmin;Password=123456;Encrypt=True;TrustServerCertificate=True;
+    depends_on:
+      gallium-proxy:
+        condition: service_healthy

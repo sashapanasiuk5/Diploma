@@ -1,0 +1,19 @@
+{
+  "active": true,
+  "codeType": "java",
+  "implementation": "com.dbguard.customfilters.BulkOperationsFilter",
+  "phase": null,
+  "canHaveCode": false,
+  "helpURL": "https://www.galliumdata.com/docs/java-filters/sample-java-filter",
+  "tags": [],
+  "parameters": {
+    "Limits": {
+      "defaultValue":"",
+      "description":"List of limits for tables",
+      "type":"STRING",
+      "required":true
+    }
+  },
+  "autocomplete": [
+  ]
+}

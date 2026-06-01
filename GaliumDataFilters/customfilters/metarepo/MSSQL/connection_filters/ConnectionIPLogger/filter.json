@@ -1,0 +1,13 @@
+{
+  "active": true,
+  "codeType": "java",
+  "implementation": "com.dbguard.customfilters.ConnectionIPLogger",
+  "phase": null,
+  "canHaveCode": false,
+  "helpURL": "https://www.galliumdata.com/docs/java-filters/sample-java-filter",
+  "tags": [],
+  "parameters": {
+  },
+  "autocomplete": [
+  ]
+}

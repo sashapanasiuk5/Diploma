@@ -1,0 +1,73 @@
+@page
+@using DBGuard.DataAccess.Data.Enums
+@model DBGuard.AdminApp.Pages.Users.Index
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold section-title">System Users</h2>
+        <a asp-page="AddUser" class="btn btn-primary-custom px-4 py-3 text-white">
+            <i class="fas fa-plus me-2"></i>Add New User
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body px-4 py-2">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="p-3">Username</th>
+                            <th class="p-3">Email</th>
+                            <th class="p-3">Role</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td class="py-3 fw-medium">@user.Username</td>
+                                <td class="py-3">@user.Email</td>
+                                <td class="py-3">
+                                    <span class="badge fs-6 @GetRoleBadgeClass(user.Role)">@user.Role</span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="badge fs-6 @(user.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(user.IsActive ? "Active" : "Disabled")
+                                    </span>
+                                </td>
+                                <td class="py-3 text-end">
+                                    <form asp-page-handler="ToggleStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" 
+                                                class="btn @(user.IsActive ? "btn-outline-danger" : "btn-outline-success") btn-sm">
+                                            <i class="fas @(user.IsActive ? "fa-ban" : "fa-check")"></i>
+                                            @(user.IsActive ? "Disable" : "Enable")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetRoleBadgeClass(UserRole role)
+    {
+        return role switch
+        {
+            UserRole.User => "bg-danger",
+            UserRole.Root => "bg-warning text-dark",
+            _ => "bg-primary"
+        };
+    }
+}

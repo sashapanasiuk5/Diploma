@@ -1,0 +1,290 @@
+@page
+@using DBGuard.DataAccess.Data.Enums
+@model DBGuard.AdminApp.Pages.Rules.Index
+@{
+ViewData["Title"] = "Rules";
+Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <h2 class="mb-5 fw-bold text-center">Security Rules</h2>
+
+    <form method="post">
+        <div class="row g-4 justify-content-center">
+
+            <!-- SQL Injection Section -->
+            <div class="col-lg-8">
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h4 class="section-title mb-1">SQL Injection Protection</h4>
+                            <p class="text-muted">Detect and prevent SQL injection attempts</p>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input asp-for="SqlInjectionRule.IsEnabled" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-4">
+                        <label class="form-label fw-medium">Action when detected</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio"
+                                   name="SqlInjectionRule.RuleData.SqlInjectionAction"
+                                   value="1"
+                                   class="btn-check"
+                                   id="actionAlert"
+                                   @(Model.SqlInjectionRule.RuleData.SqlInjectionAction == SqlInjectionAction.Alert
+                                   ? "checked"
+                                   : "") />
+
+                            <label class="btn btn-outline-primary" for="actionAlert">
+                                Alert Only
+                            </label>
+
+                            <input type="radio"
+                                   name="SqlInjectionRule.RuleData.SqlInjectionAction"
+                                   value="2"
+                                   class="btn-check"
+                                   id="actionBlock"
+                                   @(Model.SqlInjectionRule.RuleData.SqlInjectionAction == SqlInjectionAction.Block
+                                   ? "checked"
+                                   : "") />
+
+                            <label class="btn btn-outline-primary" for="actionBlock">
+                                Block Request
+                            </label>
+
+                            <input type="radio"
+                                   name="SqlInjectionRule.RuleData.SqlInjectionAction"
+                                   value="3"
+                                   class="btn-check"
+                                   id="actionBoth"
+                                   @(Model.SqlInjectionRule.RuleData.SqlInjectionAction == SqlInjectionAction.Both
+                                       ? "checked"
+                                       : "") />
+                            <label class="btn btn-outline-primary" for="actionBoth">
+                                Alert + Block
+                            </label>
+                        </div>
+
+                        <div class="row pt-4">
+                            <div class="col-md-8">
+                                <label class="form-label fw-medium">Confidence Threshold ( 1.0 max value )</label>
+                                <input asp-for="SqlInjectionRule.RuleData.SqlInjectionConfidenceThreshold"
+                                       type="number"
+                                       class="form-control"
+                                       min="0.5"
+                                       max="1.0"
+                                       step="0.05" />
+                                <small class="text-muted">
+                                    Minimum confidence score required to trigger the action
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Brute Force Section -->
+            <div class="col-lg-8">
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h4 class="section-title mb-1">Brute Force Detection</h4>
+                            <p class="text-muted">Detect repeated login attempts</p>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input asp-for="BruteForceRule.IsEnabled" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <label class="form-label fw-medium">Audit log filepath</label>
+                            <input asp-for="BruteForceRule.RuleData.AuditLogFilePath" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Max Attempts per User</label>
+                            <input asp-for="BruteForceRule.RuleData.MaxAttemptsPerUser" type="number" class="form-control" min="3" max="50" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Max Attempts per IP</label>
+                            <input asp-for="BruteForceRule.RuleData.MaxAttemptsPerIP" type="number" class="form-control" min="5" max="100" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Time Window (minutes)</label>
+                            <input asp-for="BruteForceRule.RuleData.TimeWindowMinutes" type="number" class="form-control" min="1" max="1440" />
+                            <small class="text-muted">Time period to count attempts</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suspicious Bulk Operations -->
+            <div class="col-lg-8">
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h4 class="section-title mb-1">Suspicious Bulk Operations</h4>
+                            <p class="text-muted">Detect large number of rows affected in single operation</p>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input asp-for="BulkOperationsRule.IsEnabled" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+
+                    <!-- Clean Tabular Structure -->
+                    <div class="bulk-rules-table">
+                        <!-- Header -->
+                        <div class="row fw-medium text-muted mb-2 px-2" style="font-size: 0.95rem;">
+                            <div class="col-md-6">Table Name</div>
+                            <div class="col-md-4">Threshold (rows)</div>
+                            <div class="col-md-2 text-center">Action</div>
+                        </div>
+
+                        <!-- Rules Container -->
+                        <div id="bulkRulesContainer" class="border rounded-3 bg-light">
+                            @for (int i = 0; i < Model.BulkOperationsRule.RuleData.Count; i++)
+                            {
+                            <div class="bulk-rule-item row align-items-center g-3 p-3">
+                                <div class="col-md-6">
+                                    <input asp-for="BulkOperationsRule.RuleData[i].TableName"
+                                           class="form-control"
+                                           placeholder="e.g. Users, Orders" />
+                                </div>
+                                <div class="col-md-4">
+                                    <input asp-for="BulkOperationsRule.RuleData[i].Threshold"
+                                           type="number"
+                                           class="form-control"
+                                           min="10" />
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm remove-rule">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <button type="button" id="addBulkRule" class="btn btn-outline-primary w-100 mt-3 py-3">
+                        <i class="fas fa-plus me-2"></i>Add New Table Rule
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card p-4">
+                    <div class="row g-4">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div>
+                                <h4 class="section-title mb-1">Sending alerts via Email</h4>
+                                <p class="text-muted">Get alerts about threats as soon as they are detected</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input asp-for="EmailSendingRule.IsEnabled" class="form-check-input" type="checkbox" />
+                            </div>
+                        </div>
+
+                        <!-- Host & Port -->
+                        <div class="col-md-8">
+                            <label class="form-label fw-medium">SMTP Host</label>
+                            <input asp-for="EmailSendingRule.RuleData.SmtpHost" class="form-control" placeholder="smtp.gmail.com"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-medium">Port</label>
+                            <input asp-for="EmailSendingRule.RuleData.Port" type="number" class="form-control"/>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-medium">Username / Email</label>
+                            <input asp-for="EmailSendingRule.RuleData.Username" type="email" class="form-control"/>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-medium">Password</label>
+                            <input asp-for="SmtpPassword" type="password" class="form-control"
+                                   placeholder="Enter new password (will be encrypted)"/>
+                            <small class="text-muted">Leave empty if you don't want to change the current password</small>
+                        </div>
+
+                        <!-- From Email -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-medium">From Email</label>
+                            <input asp-for="EmailSendingRule.RuleData.FromEmail" type="email" class="form-control"/>
+                        </div>
+
+                        <!-- Recipients -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-medium">Alert Recipients</label>
+                            <input asp-for="EmailSendingRule.RuleData.Recipients" class="form-control"
+                                   placeholder="admin@example.com; security@example.com"/>
+                            <small class="text-muted">Multiple emails separated by semicolon (;)</small>
+                        </div>
+
+                        <!-- TLS -->
+                        <div class="col-md-12">
+                            <div class="form-check form-switch d-flex align-items-center">
+                                <input asp-for="EmailSendingRule.RuleData.UseTls" class="form-check-input" type="checkbox"/>
+                                <label class="form-check-label fw-medium px-3" asp-for="EmailSendingRule.RuleData.UseTls">
+                                    Use TLS / SSL
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-5 text-center">
+            <button type="submit" class="btn text-white btn-primary-custom px-5 py-3">
+                <i class="fas fa-save me-2"></i>Save Rules
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let ruleIndex = @Model.BulkOperationsRule.RuleData.Count;
+
+    document.getElementById('addBulkRule').addEventListener('click', function () {
+        const container = document.getElementById('bulkRulesContainer');
+
+        const newRule = `
+            <div class="bulk-rule-item row align-items-center g-3 p-3">
+                <div class="col-md-6">
+                    <input name="BulkOperationsRule.RuleData[${ruleIndex}].TableName" 
+                           class="form-control" 
+                           placeholder="e.g. Users, Orders" />
+                </div>
+                <div class="col-md-4">
+                    <input name="BulkOperationsRule.RuleData[${ruleIndex}].Threshold" 
+                           type="number" 
+                           class="form-control" 
+                           min="10" value="100" />
+                </div>
+                <div class="col-md-2 text-center">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-rule">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+
+        container.insertAdjacentHTML('beforeend', newRule);
+        ruleIndex++;
+    });
+
+    // Remove rule
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.remove-rule')) {
+            e.target.closest('.bulk-rule-item').remove();
+        }
+    });
+</script>
