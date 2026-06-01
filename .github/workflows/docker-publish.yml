@@ -1,0 +1,81 @@
+name: Build and Push Docker Images
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [ "master" ]
+
+jobs:
+  prepare-version:
+    name: Extract Version
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.VERSION }}
+    steps:
+      - name: Extract version from branch name
+        id: extract_version
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          VERSION=${BRANCH_NAME#release/}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+  build-and-push-proxy:
+    needs: prepare-version
+    name: Build Proxy Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build image using build.sh
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Tag and Push Proxy image to Docker Hub
+        run: |
+          VERSION="${{ needs.prepare-version.outputs.version }}"
+          
+          docker tag gallium-dbguard:1.0 ${{ secrets.DOCKERHUB_USERNAME }}/gallium-dbguard:$VERSION
+          docker tag gallium-dbguard:1.0 ${{ secrets.DOCKERHUB_USERNAME }}/gallium-dbguard:latest
+          
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/gallium-dbguard:$VERSION
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/gallium-dbguard:latest
+
+  build-and-push-admin:
+    needs: prepare-version
+    name: Build Admin & ML Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Admin image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile-Dbguard
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/dbguard:${{ needs.prepare-version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/dbguard:latest
