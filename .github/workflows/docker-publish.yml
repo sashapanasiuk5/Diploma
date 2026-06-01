@@ -74,8 +74,8 @@ jobs:
       - name: Build and push Admin image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile-Dbguard
+          context: ./DBGuard
+          file: ./DBGuard/DBGuard.AdminApp/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/dbguard:${{ needs.prepare-version.outputs.version }}
