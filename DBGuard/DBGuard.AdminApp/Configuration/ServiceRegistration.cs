@@ -55,7 +55,7 @@ public static class ServiceRegistration
         services.AddScoped<IEmailService, EmailService>();
         services.AddMemoryCache();
         
-        //services.AddHostedService<AlertHostedService>();
+        services.AddHostedService<AlertHostedService>();
         
         services.AddHttpClient("GalliumData", client =>
         {
