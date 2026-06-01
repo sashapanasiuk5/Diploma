@@ -43,7 +43,8 @@ jobs:
 
       - name: Build image using build.sh
         run: |
-          chmod +x build.sh
+          cd GaliumDataFilters/customfilters/
+	  chmod +x build.sh
           ./build.sh
 
       - name: Tag and Push Proxy image to Docker Hub
