@@ -43,6 +43,7 @@ jobs:
 
       - name: Build image using build.sh
         run: |
+          cd GaliumDataFilters/customfilters/
           chmod +x build.sh
           ./build.sh
 
